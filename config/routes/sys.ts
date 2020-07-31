@@ -2,7 +2,7 @@
 export default[
     {
         path: '/func',
-        name: '函数测试',
+        name: 'Func测试',
         icon: 'smile',
         component: './demo/FuncDemo',
     },

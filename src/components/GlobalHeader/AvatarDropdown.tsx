@@ -21,8 +21,8 @@ class AvatarDropdown extends React.Component<GlobalHeaderRightProps> {
   }) => {
     const { key } = event;
 
+    const { dispatch } = this.props;
     if (key === 'logout') {
-      const { dispatch } = this.props;
 
       if (dispatch) {
         dispatch({
@@ -31,7 +31,15 @@ class AvatarDropdown extends React.Component<GlobalHeaderRightProps> {
       }
 
       return;
+    }else if(key === 'changeTab'){
+      if (dispatch) {
+        dispatch({
+          type: 'global/rSwitchTab',
+        });
+      }
+      return;
     }
+    
 
     history.push(`/account/${key}`);
   };
@@ -43,6 +51,7 @@ class AvatarDropdown extends React.Component<GlobalHeaderRightProps> {
         name: '',
       },
       menu,
+      isTab,
     } = this.props;
     const menuHeaderDropdown = (
       <Menu className={styles.menu} selectedKeys={[]} onClick={this.onMenuClick}>
@@ -58,8 +67,13 @@ class AvatarDropdown extends React.Component<GlobalHeaderRightProps> {
             个人设置
           </Menu.Item>
         )}
+        {menu && (
+          <Menu.Item key="changeTab">
+            <SettingOutlined />
+            切换{isTab?"面包屑":"多页切"}
+          </Menu.Item>
+        )}
         {menu && <Menu.Divider />}
-
         <Menu.Item key="logout">
           <LogoutOutlined />
           退出登录
@@ -87,6 +101,7 @@ class AvatarDropdown extends React.Component<GlobalHeaderRightProps> {
   }
 }
 
-export default connect(({ user }: ConnectState) => ({
+export default connect(({ user,global }: ConnectState) => ({
   currentUser: user.currentUser,
+  isTab: global.isTab
 }))(AvatarDropdown);

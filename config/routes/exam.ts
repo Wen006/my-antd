@@ -1,5 +1,6 @@
+type RouteType = { path: String; redirect?: String; name?: String | undefined; icon?: String | undefined; component?: String | undefined; routes?: Array<RouteType> | undefined; }
 
-const arr = [
+const arr:Array<RouteType> = [
     {
         path: '/',
         redirect: '/dashboard/analysis',
@@ -218,15 +219,17 @@ const arr = [
     }
 ]
 
-type RouteType = { path: String; redirect?: String; name?: String | undefined; icon?: String | undefined; component?: String | undefined; routes?: Array<RouteType> | undefined; }
 
 function addPre(routes:Array<RouteType>, pre: String) {
     routes.forEach(route => {
-        route.path = pre + "" + route.path
+        if(route.component) {
+            route.component = "./"+pre + "" + route.component.replace("\.","");
+        }
         if(route.routes&&route.routes.length>0){
             addPre(route.routes, pre);
         }
     });
     return routes;
 }
-export default arr;//addPre(arr,"exam");
+ 
+export default addPre(arr,"exam");

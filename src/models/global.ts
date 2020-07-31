@@ -12,6 +12,7 @@ export interface NoticeItem extends NoticeIconData {
 
 export interface GlobalModelState {
   collapsed: boolean;
+  isTab: boolean;
   notices: NoticeItem[];
 }
 
@@ -27,6 +28,7 @@ export interface GlobalModelType {
     changeLayoutCollapsed: Reducer<GlobalModelState>;
     saveNotices: Reducer<GlobalModelState>;
     saveClearedNotices: Reducer<GlobalModelState>;
+    rSwitchTab:Reducer<GlobalModelState>;
   };
   subscriptions: { setup: Subscription };
 }
@@ -36,6 +38,7 @@ const GlobalModel: GlobalModelType = {
 
   state: {
     collapsed: false,
+    isTab: true,
     notices: [],
   },
 
@@ -114,23 +117,29 @@ const GlobalModel: GlobalModelType = {
         notices: payload,
       };
     },
-    saveClearedNotices(state = { notices: [], collapsed: true }, { payload }): GlobalModelState {
+    saveClearedNotices(state = { notices: [], collapsed: true,isTab: false }, { payload }): GlobalModelState {
       return {
         ...state,
         collapsed: false,
         notices: state.notices.filter((item): boolean => item.type !== payload),
       };
     },
+    rSwitchTab(state = { notices: [], collapsed: true,isTab: false }):GlobalModelState{
+      return {
+        ...state,
+        isTab:!state.isTab
+      }
+    }
   },
 
   subscriptions: {
     setup({ history }): void {
       // Subscribe history(url) change, trigger `load` action if pathname is `/`
-      history.listen(({ pathname, search }): void => {
-        if (typeof window.ga !== 'undefined') {
-          window.ga('send', 'pageview', pathname + search);
-        }
-      });
+      // history.listen(({ pathname, search }): void => {
+      //   if (typeof window.ga !== 'undefined') {
+      //     window.ga('send', 'pageview', pathname + search);
+      //   }
+      // });
     },
   },
 };

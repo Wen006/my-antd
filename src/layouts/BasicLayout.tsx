@@ -9,6 +9,8 @@ import ProLayout, {
   Settings,
   DefaultFooter,
   SettingDrawer,
+  RouteContext,
+  RouteContextType,
 } from '@ant-design/pro-layout';
 import React, { useEffect } from 'react';
 import { Link, useIntl, connect, Dispatch, history } from 'umi';
@@ -40,6 +42,7 @@ export interface BasicLayoutProps extends ProLayoutProps {
   route: ProLayoutProps['route'] & {
     authority: string[];
   };
+  isTab:boolean,
   settings: Settings;
   dispatch: Dispatch;
 }
@@ -58,7 +61,6 @@ const menuDataRender = (menuList: MenuDataItem[]): MenuDataItem[] =>
       ...item,
       children: item.children ? menuDataRender(item.children) : undefined,
     };
-    console.log('item', item)
     return Authorized.check(item.authority, localItem, null) as MenuDataItem;
   });
 
@@ -94,8 +96,9 @@ const BasicLayout: React.FC<BasicLayoutProps> = (props) => {
     children,
     settings,
     location = {
-      pathname: '/',
+      pathname: '/'
     },
+    isTab,
   } = props;
   /**
    * constructor
@@ -136,10 +139,9 @@ const BasicLayout: React.FC<BasicLayoutProps> = (props) => {
           if (menuItemProps.isUrl || !menuItemProps.path) {
             return defaultDom;
           }
-
           return <Link to={menuItemProps.path}>{defaultDom}</Link>;
         }}
-        breadcrumbRender={(routers = []) => [
+        breadcrumbRender={isTab?undefined:(routers = []) => [
           {
             path: '/',
             breadcrumbName: formatMessage({
@@ -149,7 +151,6 @@ const BasicLayout: React.FC<BasicLayoutProps> = (props) => {
           ...routers,
         ]}
         itemRender={(route, params, routes, paths) => {
-          console.log('route, params, routes, paths', route, params, routes, paths)
           const first = routes.indexOf(route) === 0;
           return first ? (
             <Link to={paths.join('/')}>{route.breadcrumbName}</Link>
@@ -157,7 +158,6 @@ const BasicLayout: React.FC<BasicLayoutProps> = (props) => {
             <span>{route.breadcrumbName}</span>
           );
         }}
-        // menuRender={false}
         footerRender={() => defaultFooterDom}
         menuDataRender={menuDataRender}
         rightContentRender={() => <RightContent />}
@@ -165,8 +165,12 @@ const BasicLayout: React.FC<BasicLayoutProps> = (props) => {
         {...settings}
       >
         <Authorized authority={authorized!.authority} noMatch={noMatch}>
-          {/* {children} */}
-          <TabLayout>{children}</TabLayout>
+          {isTab?
+            <RouteContext.Consumer>
+              {(p:RouteContextType)=><TabLayout p={p} menuData={p.menuData} routes={p.routes} pageTitleInfo={p.pageTitleInfo}>{children}</TabLayout>}
+            </RouteContext.Consumer>
+            :children
+          }
         </Authorized>
       </ProLayout>
       <SettingDrawer
@@ -184,5 +188,6 @@ const BasicLayout: React.FC<BasicLayoutProps> = (props) => {
 
 export default connect(({ global, settings }: ConnectState) => ({
   collapsed: global.collapsed,
+  isTab: global.isTab,
   settings,
 }))(BasicLayout);

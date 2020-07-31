@@ -38,7 +38,7 @@ export default [
         Routes: ['src/pages/Authorized'],
         authority: ['admin', 'user'],
         routes: [
-            // ...exam,
+            ...exam,
             ...sys
         ],
     },

@@ -2,6 +2,9 @@
 
 针对 [Ant Design Pro](https://pro.ant.design). 进行了个性化处理
 
+[Github](https://github.com/Wen006/my-antd.git)
+[Gitee](https://gitee.com/W006/my-antd.git)
+
 ## 修改点
 
 - 支持菜单多切页和面包屑切换
